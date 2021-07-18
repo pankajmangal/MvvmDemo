@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mvvm_demo/ui/home/controller/home_controller.dart';
 import 'package:mvvm_demo/utils/Gap.dart';
+import 'package:mvvm_demo/utils/color_helper.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -19,7 +20,22 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: kPrimaryColor,
+        leading: Container(),
+        centerTitle: true,
+        title: Text("MVVM Demo"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: InkWell(child: Icon(Icons.logout),
+            onTap: (){
+              print("Logout");
+              user.delete();
+            },),
+          )
+        ],
+      ),
       body: SafeArea(
         child: Container(
           color: Colors.white,

@@ -1,13 +1,19 @@
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mvvm_demo/ui/home/home_page.dart';
+import 'package:mvvm_demo/utils/Gap.dart';
+import 'package:mvvm_demo/utils/app_utils.dart';
+import 'package:mvvm_demo/utils/color_helper.dart';
 
 class LoginPage extends StatelessWidget {
   final _phoneController = TextEditingController();
   final _codeController = TextEditingController();
+  String countryDialCode = "+91";
+  String countryCode = "IN";
 
   @override
   Widget build(BuildContext context) {
@@ -23,27 +29,53 @@ class LoginPage extends StatelessWidget {
                 Text("Login", style: TextStyle(color: Colors.lightBlue, fontSize: 36, fontWeight: FontWeight.w500),),
 
                 SizedBox(height: 60,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                        width: 120,
+                        // height: 80,
+                        child: CountryCodePicker(
+                          onChanged: (e) {
+                            print('countryCode :: ${e.code} :: ${e.dialCode} :: ${e.flagUri}');
+                            countryDialCode = e.dialCode!;
+                            countryCode = e.code!;
+                          },
+                          initialSelection: AppUtils.countryCode,
+                          favorite: ['US', 'UK', 'AU' 'IN'],/*'+970'*/
+                          showCountryOnly: false,
+                          showOnlyCountryWhenClosed: false,
+                          showFlag: true,
+                          alignLeft: false,
+                        )),
+                    Container(
+                      width: 0.8,
+                      color: hintColor.withOpacity(0.4),
+                    ),
+                    HorizontalGap(gap: 12),
+                    Expanded(
+                      child: TextFormField(
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),/*FilteringTextInputFormatter.allow(RegExp('[0-9.,]+')*/
+                        // inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                        textInputAction: TextInputAction.done,
+                        maxLength: 16,
+                        decoration: InputDecoration(
+                            counterText: "",
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            contentPadding:
+                            EdgeInsets.symmetric(vertical: 5),
+                            hintText: "Phone Number"
 
-                TextFormField(
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),/*FilteringTextInputFormatter.allow(RegExp('[0-9.,]+')*/
-                  // inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
-                  textInputAction: TextInputAction.done,
-                  maxLength: 16,
-                  decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                          borderSide: BorderSide(color: Colors.grey[200] ?? Colors.grey)
+                        ),
+                        controller: _phoneController,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                          borderSide: BorderSide(color: Colors.grey[300] ?? Colors.grey)
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      hintText: "Phone Number"
-
-                  ),
-                  controller: _phoneController,
+                    )
+                  ],
                 ),
                 SizedBox(height: 30,),
                 Container(
@@ -58,10 +90,12 @@ class LoginPage extends StatelessWidget {
 
                       if(phoneNumber.isEmpty){
                         print("Phone number is mandatory");
+                        Get.snackbar('Error', "Phone number is mandatory", instantInit: false);
                       }else if(phoneNumber.length>0 && phoneNumber.length<=8){
                         print("Phone number should be atleast 8 char");
+                        Get.snackbar('Error', "Phone number should be atleast 8 char", instantInit: false);
                       }else{
-                        registerUser("+91${_phoneController.text.trim()}", context);
+                        registerUser("$countryDialCode${_phoneController.text.trim()}", context);
                       }
                     },
                     color: Colors.blue,
@@ -93,6 +127,7 @@ class LoginPage extends StatelessWidget {
         },
         verificationFailed: (FirebaseAuthException authException){
           print("Exception => ${authException.message}");
+          Get.snackbar('Error', authException.message!, instantInit: false);
         },
         codeSent: (String verificationId, int? forceResendingToken){
           //show dialog to take input from the user
@@ -106,6 +141,8 @@ class LoginPage extends StatelessWidget {
                   children: <Widget>[
                     TextField(
                       controller: _codeController,
+                      maxLength: 10,
+                      keyboardType: TextInputType.number,
                     ),
 
                   ],
