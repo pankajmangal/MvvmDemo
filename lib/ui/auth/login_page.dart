@@ -16,7 +16,7 @@ class LoginPage extends StatelessWidget {
   final _codeController = TextEditingController();
   String countryDialCode = "+91";
   String countryCode = "IN";
-  final LoginController _loginController = Get.put(LoginController());
+  final LoginController _loginController = Get.put(LoginController()); //Managing state using Getx pattern
   GetStorage storage = GetStorage();
 
   @override
@@ -116,6 +116,7 @@ class LoginPage extends StatelessWidget {
     print("Mobile Number => $mobile");
     FirebaseAuth _auth = FirebaseAuth.instance;
 
+    //Firebase auth using Phone Number authentication....
     _auth.verifyPhoneNumber(
         phoneNumber: mobile,
         timeout: Duration(seconds: 60),
@@ -163,7 +164,7 @@ class LoginPage extends StatelessWidget {
                       auth.signInWithCredential(_credential).then((UserCredential result){
 
                         storage.write("userData", result.user);
-                        Get.to(HomePage(user: result.user!));
+                        Get.to(HomePage(user: result.user!)); // After code verification Navigate to Home page using getx library..
 
                        /* Navigator.pushReplacement(context, MaterialPageRoute(
                             builder: (context) => HomePage(user: result.user!)

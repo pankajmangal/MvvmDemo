@@ -16,7 +16,7 @@ void main() async{
       statusBarBrightness: Brightness.dark) //set Status bar icon color in iOS.
   );
   await Firebase.initializeApp();
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError; //Inititalize Firebase Crashlytics here
   runApp(MyApp());
 }
 
@@ -27,8 +27,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mvvm Demo',
-      initialRoute: login,
-      onGenerateRoute: RouteGenerator.generateRoute,
+      initialRoute: login,//After loading splash screen first screen is Login screen
+      onGenerateRoute: RouteGenerator.generateRoute, //Managing routes navigation in RouteGenerator file
       navigatorKey: NavigationService().navigationKey,
       theme: ThemeData(
         primarySwatch: Colors.blue,
