@@ -4,6 +4,8 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:mvvm_demo/ui/auth/controller/login_controller.dart';
 import 'package:mvvm_demo/ui/home/home_page.dart';
 import 'package:mvvm_demo/utils/Gap.dart';
 import 'package:mvvm_demo/utils/app_utils.dart';
@@ -14,6 +16,8 @@ class LoginPage extends StatelessWidget {
   final _codeController = TextEditingController();
   String countryDialCode = "+91";
   String countryCode = "IN";
+  final LoginController _loginController = Get.put(LoginController());
+  GetStorage storage = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -117,10 +121,8 @@ class LoginPage extends StatelessWidget {
         timeout: Duration(seconds: 60),
         verificationCompleted: (AuthCredential _credential){
           _auth.signInWithCredential(_credential).then((UserCredential result){
+            storage.write("userData", result.user);
             Get.to(HomePage(user: result.user!));
-            Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => HomePage(user: result.user!,)
-            ));
           }).catchError((e){
             print(e);
           });
@@ -159,9 +161,13 @@ class LoginPage extends StatelessWidget {
 
                       AuthCredential _credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
                       auth.signInWithCredential(_credential).then((UserCredential result){
-                        Navigator.pushReplacement(context, MaterialPageRoute(
+
+                        storage.write("userData", result.user);
+                        Get.to(HomePage(user: result.user!));
+
+                       /* Navigator.pushReplacement(context, MaterialPageRoute(
                             builder: (context) => HomePage(user: result.user!)
-                        ));
+                        ));*/
                       }).catchError((e){
                         print(e);
                       });

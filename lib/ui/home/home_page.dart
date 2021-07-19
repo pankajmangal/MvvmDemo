@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:mvvm_demo/ui/auth/login_page.dart';
 import 'package:mvvm_demo/ui/home/controller/home_controller.dart';
 import 'package:mvvm_demo/utils/Gap.dart';
 import 'package:mvvm_demo/utils/color_helper.dart';
-
 
 class HomePage extends StatelessWidget {
 
@@ -16,6 +17,7 @@ class HomePage extends StatelessWidget {
   var formatterDate = DateFormat("yyy-MM-dd");
   var formatterTime = DateFormat("HH : mm a");
   final HomeController _homeController = Get.put(HomeController());
+  GetStorage storage = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,8 @@ class HomePage extends StatelessWidget {
             onTap: (){
               print("Logout");
               user.delete();
+              storage.erase();
+              Get.to(LoginPage());
             },),
           )
         ],
@@ -111,6 +115,7 @@ class HomePage extends StatelessWidget {
                         controller: _homeController.usernameController,
                         onChanged: (String? value){
                           if(value?.isNotEmpty ?? false){
+                            storage.write("username", value);
                             _homeController.username.value = value!;
                           }else{
                             _homeController.username.value = "";
